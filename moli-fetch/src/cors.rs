@@ -1,6 +1,19 @@
 use moli_web_mime::response_header_values;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::RequestCredentialsMode;
+
+// The CLI builds one browser configuration per process. This process-wide flag
+// lets every renderer thread use the same explicit test-mode CORS policy.
+static CORS_CHECKS_DISABLED: AtomicBool = AtomicBool::new(false);
+
+pub fn set_cors_checks_disabled(disabled: bool) {
+    CORS_CHECKS_DISABLED.store(disabled, Ordering::Relaxed);
+}
+
+pub fn cors_checks_disabled() -> bool {
+    CORS_CHECKS_DISABLED.load(Ordering::Relaxed)
+}
 
 fn combined_cors_response_header_value(
     headers: &[(String, Vec<u8>)],

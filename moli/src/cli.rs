@@ -460,6 +460,11 @@ pub struct CommonArgs {
     #[arg(long)]
     pub insecure_disable_tls_host_verification: bool,
 
+    /// Disable browser CORS preflight and response validation. Use only for
+    /// authorized local or test environments.
+    #[arg(long, env = "MOLI_DISABLE_CORS")]
+    pub disable_cors: bool,
+
     /// Use this PEM file as the CA certificate bundle for HTTPS server
     /// verification.
     #[arg(long, value_name = "PATH")]

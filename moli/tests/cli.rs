@@ -115,6 +115,7 @@ fn parses_explicit_fetch_command_with_compatibility_flags() {
             timeout: 25_000,
             common: CommonArgs {
                 insecure_disable_tls_host_verification: false,
+                disable_cors: false,
                 ca_cert: None,
                 client_cert: None,
                 client_key: None,

@@ -1,4 +1,4 @@
-use moli_fetch::validate_cors_response_for_origin;
+use moli_fetch::{cors_checks_disabled, validate_cors_response_for_origin};
 
 use moli_cookie_jar::same_site_urls;
 use moli_fetch::{RedirectSource, RequestCredentialsMode, RequestMode};
@@ -100,6 +100,8 @@ pub(crate) fn validate_fetch_response_security_policy(
             policy_context.document_isolation_policy,
         )?;
         validate_opaque_response_blocking(&request_origin, &head.final_url, &head.headers)
+    } else if cors_checks_disabled() {
+        Ok(())
     } else {
         validate_cors_response_chain(&request_origin, head, credentials_mode)
     }
@@ -160,6 +162,8 @@ pub(crate) fn validate_fetch_response_security_policy_with_body_classified(
             response_body,
         )
         .map_err(FetchResponseSecurityViolation::OpaqueResponseBlocked)
+    } else if cors_checks_disabled() {
+        Ok(())
     } else {
         validate_cors_response_chain(&request_origin, head, credentials_mode)
             .map_err(FetchResponseSecurityViolation::Rejected)
@@ -397,6 +401,10 @@ pub(crate) fn validate_cors_preflight_response(
     response_headers: &[(String, Vec<u8>)],
     use_cors_preflight: bool,
 ) -> Result<(), String> {
+    if cors_checks_disabled() {
+        return Ok(());
+    }
+
     if !(200..300).contains(&response_status) {
         return Err(format!(
             "CORS preflight failed: response status {response_status}"

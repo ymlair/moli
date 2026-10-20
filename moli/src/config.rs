@@ -7,7 +7,8 @@ use moli_core::{
     runtime::BrowserConfig,
 };
 use moli_fetch::{
-    FetchConfig, WebBotAuthProfile, WebBotAuthSigner, validate_http_host_resolve_entries,
+    FetchConfig, WebBotAuthProfile, WebBotAuthSigner, set_cors_checks_disabled,
+    validate_http_host_resolve_entries,
 };
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -103,6 +104,8 @@ fn apply_common_args(config: &mut AppConfig, common: &CommonArgs) -> Result<()> 
     if let Some(log_level) = common.log_level {
         config.log_filter = log_level.as_tracing_filter().to_owned();
     }
+
+    set_cors_checks_disabled(common.disable_cors);
 
     if let Some(user_agent) = &common.user_agent {
         config
